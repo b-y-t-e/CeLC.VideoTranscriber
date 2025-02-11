@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace Cecl.VideoTranscriber.App;
+namespace CeLC.VideoTranscriber.App;
 
 /// <summary>
 /// Interaction logic for App.xaml

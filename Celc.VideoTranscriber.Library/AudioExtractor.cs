@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using NAudio.Wave;
 
-namespace Celc.VideoTranscriber.Library;
+namespace CeLC.VideoTranscriber.Library;
 
 public class AudioExtractor
 {

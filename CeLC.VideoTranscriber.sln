@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Celc.VideoTranscriber.Library", "Celc.VideoTranscriber.Library\Celc.VideoTranscriber.Library.csproj", "{519D5B39-DCAF-4C0B-BB2B-FFF719667E05}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CeLC.VideoTranscriber.Library", "CeLC.VideoTranscriber.Library\CeLC.VideoTranscriber.Library.csproj", "{519D5B39-DCAF-4C0B-BB2B-FFF719667E05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cecl.VideoTranscriber.App", "Cecl.VideoTranscriber.App\Cecl.VideoTranscriber.App.csproj", "{B2CF9637-BCDD-4997-B494-C6EB7FABF8C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CeLC.VideoTranscriber.App", "CeLC.VideoTranscriber.App\CeLC.VideoTranscriber.App.csproj", "{B2CF9637-BCDD-4997-B494-C6EB7FABF8C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

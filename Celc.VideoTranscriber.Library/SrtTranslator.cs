@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Celc.VideoTranscriber.Library
+namespace CeLC.VideoTranscriber.Library
 {
     /// <summary>
     /// Klasa odpowiedzialna za tłumaczenie napisów SRT z podziałem na partie (batch),

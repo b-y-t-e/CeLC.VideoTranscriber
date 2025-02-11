@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Celc.VideoTranscriber.Library\Celc.VideoTranscriber.Library.csproj" />
+      <ProjectReference Include="..\CeLC.VideoTranscriber.Library\CeLC.VideoTranscriber.Library.csproj" />
     </ItemGroup>
 
 </Project>

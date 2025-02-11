@@ -1,4 +1,4 @@
-﻿using Celc.VideoTranscriber.Library;
+﻿using CeLC.VideoTranscriber.Library;
 
 public class SrtMerger
 {

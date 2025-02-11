@@ -3,7 +3,7 @@ using System.Web;
 using YoutubeExplode;
 using YoutubeExplode.Converter;
 
-namespace Celc.VideoTranscriber.Library;
+namespace CeLC.VideoTranscriber.Library;
 
 public class YoutubeDownloader
 {

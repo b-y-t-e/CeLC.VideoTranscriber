@@ -1,7 +1,7 @@
 ﻿using Whisper.net;
 using Whisper.net.Ggml;
 
-namespace Celc.VideoTranscriber.Library;
+namespace CeLC.VideoTranscriber.Library;
 
 public class AudioTranscriber
 {

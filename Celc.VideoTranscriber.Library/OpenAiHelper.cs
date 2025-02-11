@@ -7,7 +7,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Celc.VideoTranscriber.Library
+namespace CeLC.VideoTranscriber.Library
 {
     public class OpenAiHelper
     {

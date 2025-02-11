@@ -1,9 +1,9 @@
-﻿<Application x:Class="Cecl.VideoTranscriber.App.App"
+﻿<Application x:Class="CeLC.VideoTranscriber.App.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Cecl.VideoTranscriber.App"
+             xmlns:local="clr-namespace:CeLC.VideoTranscriber.App"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
     </Application.Resources>
 </Application>

@@ -3,10 +3,10 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Celc.VideoTranscriber.Library;
+using CeLC.VideoTranscriber.Library;
 using Microsoft.Win32;
 
-namespace Cecl.VideoTranscriber.App
+namespace CeLC.VideoTranscriber.App
 {
     public partial class MainWindow : Window
     {
@@ -14,6 +14,7 @@ namespace Cecl.VideoTranscriber.App
         {
             InitializeComponent();
             UpdateValuesOnChange();
+
         }
 
         private void OnVideoFileTextBoxKerPressed(object sender, KeyEventArgs e)
@@ -79,24 +80,24 @@ namespace Cecl.VideoTranscriber.App
 
                     SrtInfo srtPol =
                         await new SrtTranslator()
-                        .TranslateSrt(
-                            srtEng,
-                            ComboBoxSource.Text,
-                            ComboBoxDestination.Text,
+                            .TranslateSrt(
+                                srtEng,
+                                ComboBoxSource.Text,
+                                ComboBoxDestination.Text,
                                 ComboBoxOpenAIModel.Text,
-                            openAiApiKey: OpenAiApiKey.Text,
+                                openAiApiKey: OpenAiApiKey.Text,
                                 deepseekApiKey: DeepSeekApiKey.Text,
                                 progress: OnTranslationProgress);
 
                     SrtInfo srtEngPol =
                         await new SrtTranslator()
                             .TranslateSrt(
-                            srtEng,
-                            ComboBoxSource.Text,
-                            ComboBoxDestination.Text,
+                                srtEng,
+                                ComboBoxSource.Text,
+                                ComboBoxDestination.Text,
                                 ComboBoxOpenAIModel.Text,
-                            twoLanguages: true,
-                            openAiApiKey: OpenAiApiKey.Text,
+                                twoLanguages: true,
+                                openAiApiKey: OpenAiApiKey.Text,
                                 deepseekApiKey: DeepSeekApiKey.Text,
                                 progress: OnTranslationProgress);
                 }

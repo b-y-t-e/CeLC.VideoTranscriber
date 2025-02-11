@@ -1,4 +1,4 @@
-﻿namespace Celc.VideoTranscriber.Library;
+﻿namespace CeLC.VideoTranscriber.Library;
 
 public class VideoInfo
 {
