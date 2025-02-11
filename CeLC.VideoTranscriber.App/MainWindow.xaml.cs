@@ -14,7 +14,6 @@ namespace CeLC.VideoTranscriber.App
         {
             InitializeComponent();
             UpdateValuesOnChange();
-
         }
 
         private void OnVideoFileTextBoxKerPressed(object sender, KeyEventArgs e)
@@ -41,7 +40,7 @@ namespace CeLC.VideoTranscriber.App
 
         private async void OnExecuteClick(object sender, RoutedEventArgs e)
         {
-            TextBlockStatus.Text = "";
+            OnTranslationProgress("");
 
             if (!string.IsNullOrWhiteSpace(YoutubeTextBox.Text) && !YoutubeTextBox.Text.ToLower().StartsWith("http"))
                 YoutubeTextBox.Text = "https://" + YoutubeTextBox.Text;
@@ -57,18 +56,18 @@ namespace CeLC.VideoTranscriber.App
                     String.IsNullOrEmpty(VideoFileTextBox.Text))
                     throw new Exception("You must enter a video file.");
 
-                TextBlockStatus.Text = "Downloading...";
+                OnTranslationProgress("Downloading...");
 
                 VideoInfo video = !String.IsNullOrEmpty(YoutubeTextBox.Text)
                     ? await new YoutubeDownloader().DownloadYoutube(YoutubeTextBox.Text)
                     : await new RawVideo().Load(VideoFileTextBox.Text);
 
-                TextBlockStatus.Text = "Extracting audio...";
+                OnTranslationProgress("Extracting audio...");
 
                 AudioInfo audio = await new AudioExtractor()
                     .ExtractAudio(video);
 
-                TextBlockStatus.Text = "Transcribing...";
+                OnTranslationProgress("Transcribing...");
 
                 srtEng = await new AudioTranscriber()
                     .TranscribeAudioToSrt(audio, ComboBoxSource.Text, ComboBoxWhisperModel.Text);
@@ -76,7 +75,7 @@ namespace CeLC.VideoTranscriber.App
 
                 if (!string.IsNullOrEmpty(ComboBoxDestination.Text))
                 {
-                    TextBlockStatus.Text = $"Translating to {ComboBoxDestination.Text}...";
+                    OnTranslationProgress($"Translating to {ComboBoxDestination.Text}...");
 
                     SrtInfo srtPol =
                         await new SrtTranslator()
@@ -102,14 +101,14 @@ namespace CeLC.VideoTranscriber.App
                                 progress: OnTranslationProgress);
                 }
 
-                TextBlockStatus.Text = $"> Job done in {stowatch.Elapsed.TotalSeconds}s <";
+                OnTranslationProgress($"> Job done in {stowatch.Elapsed.TotalSeconds}s <");
 
                 MessageBox.Show($"Job done in {stowatch.Elapsed.TotalSeconds}s", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                TextBlockStatus.Text = $"> Error: {ex.Message}, after {stowatch.Elapsed.TotalSeconds}s <";
+                OnTranslationProgress($"> Error: {ex.Message}, after {stowatch.Elapsed.TotalSeconds}s <");
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -128,6 +127,11 @@ namespace CeLC.VideoTranscriber.App
                 TextBlockStatus.Text =
                     $"> Translating to {ComboBoxDestination.Text} ({count}/{total})... <";
             });
+        }
+
+        private void OnTranslationProgress(string text)
+        {
+            Dispatcher.BeginInvoke(() => { TextBlockStatus.Text = text; });
         }
 
         private void ApiKeyChanged(object sender, TextChangedEventArgs e)
