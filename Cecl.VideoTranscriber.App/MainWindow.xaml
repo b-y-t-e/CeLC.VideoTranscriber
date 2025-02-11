@@ -9,7 +9,7 @@
     <Grid>
         <DockPanel LastChildFill="True">
             <Grid DockPanel.Dock="Bottom" Margin="10">
-                <Button Content="Make transcription" Height="30" Click="OnExecuteClick" />
+                <Button Content="Start Transcription" Height="30" Click="OnExecuteClick" />
             </Grid>
             <Grid DockPanel.Dock="Bottom">
                 <TextBlock x:Name="TextBlockStatus" FontWeight="Bold" Text="" HorizontalAlignment="Center"
@@ -17,18 +17,19 @@
             </Grid>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="10">
-                    <TextBlock Text="Video file:" Margin="0,0,0,5" />
+
+                    <TextBlock Text="Enter YouTube Link:" Margin="0,0,0,5" />
+                    <TextBox x:Name="YoutubeTextBox" Margin="0,0,0,10" />
+
+                    <TextBlock Text="or select a Video File:" Margin="0,0,0,5" />
                     <DockPanel Margin="0,0,0,10" LastChildFill="True">
                         <Button DockPanel.Dock="Right" Content="Browse" Click="BrowseButton_Click" Margin="5,0,0,0" />
                         <TextBox x:Name="VideoFileTextBox" TextChanged="OnVideoFileTextBoxChanged"
                                  PreviewKeyDown="OnVideoFileTextBoxKerPressed" />
                     </DockPanel>
 
-                    <TextBlock Text="Video url:" Margin="0,0,0,5" />
-                    <TextBox x:Name="YoutubeTextBox" Margin="0,0,0,10" />
-
                     <TextBlock Text="Whisper Model:" Margin="0,0,0,5" />
-                    <ComboBox Margin="0,0,0,10" SelectedIndex="10" x:Name="ComboBoxWhisperModel">
+                    <ComboBox Margin="0,0,0,10" SelectedIndex="11" x:Name="ComboBoxWhisperModel">
                         <ComboBoxItem Content="Tiny" />
                         <ComboBoxItem Content="TinyEn" />
                         <ComboBoxItem Content="Base" />
@@ -43,7 +44,7 @@
                         <ComboBoxItem Content="LargeV3Turbo" />
                     </ComboBox>
 
-                    <TextBlock Text="Source Language:" Margin="0,0,0,5" />
+                    <TextBlock Text="Original Language:" Margin="0,0,0,5" />
                     <ComboBox Margin="0,0,0,10" SelectedIndex="0" x:Name="ComboBoxSource">
                         <ComboBoxItem Content="English" />
                         <ComboBoxItem Content="Polish" />
@@ -52,7 +53,9 @@
                         <ComboBoxItem Content="Hungarian" />
                     </ComboBox>
 
-                    <TextBlock Text="Target Language:" Margin="0,0,0,5" />
+                    <Grid Height="10" />
+
+                    <TextBlock Text="Translation Language (optional):" Margin="0,0,0,5" />
                     <ComboBox Margin="0,0,0,10" SelectedIndex="0" x:Name="ComboBoxDestination">
                         <ComboBoxItem Content="" />
                         <ComboBoxItem Content="English" />
@@ -62,11 +65,21 @@
                         <ComboBoxItem Content="Hungarian" />
                     </ComboBox>
 
-                    <TextBlock Text="Deepseek ApiKey (only translation):" Margin="0,0,0,5" />
-                    <TextBox x:Name="DeepSeekApiKey" Margin="0,0,0,10" TextChanged="ApiKeyChanged"
+                    <!-- Nowy ComboBox do wyboru modelu OpenAI (do tłumaczenia) -->
+                    <TextBlock Text="OpenAI Chat Model (for translations):" Margin="0,0,0,5" />
+                    <ComboBox Margin="0,0,0,10" x:Name="ComboBoxOpenAIModel" SelectedIndex="2">
+                        <ComboBoxItem Content="GPT3_5_Turbo" />
+                        <ComboBoxItem Content="GPT4_Turbo" />
+                        <ComboBoxItem Content="GPT4o" />
+                        <ComboBoxItem Content="GPT4oMini" />
+                    </ComboBox>
+
+                    <TextBlock Visibility="Collapsed" Text="DeepSeek API Key (for translations):" Margin="0,0,0,5" />
+                    <TextBox Visibility="Collapsed" x:Name="DeepSeekApiKey" Margin="0,0,0,10" TextChanged="ApiKeyChanged"
                              PreviewKeyDown="ApiKeyKeyPresed" />
 
-                    <TextBlock Text="OpenAI ApiKey (only translation):" Margin="0,0,0,5" />
+
+                    <TextBlock Text="OpenAI API Key (for translations):" Margin="0,0,0,5" />
                     <TextBox x:Name="OpenAiApiKey" Margin="0,0,0,10" TextChanged="ApiKeyChanged"
                              PreviewKeyDown="ApiKeyKeyPresed" />
                 </StackPanel>

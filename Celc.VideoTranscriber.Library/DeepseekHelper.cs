@@ -69,7 +69,7 @@ public class DeepseekHelper
                 return _cache[key];
 
 
-        var maxRetries = 10;
+        var maxRetries = 20;
         for (var i = 0; i < maxRetries; i++)
         {
             try
@@ -102,11 +102,18 @@ public class DeepseekHelper
 
                 return result;
             }
-            catch
+            catch (Exception ex)
             {
-                if (i == (maxRetries - 1))
-                    throw;
-                await Task.Delay(1000);
+                if (ex.Message == "empty response")
+                {
+                    i--;
+                }
+                else
+                {
+                    if (i == (maxRetries - 1))
+                        throw;
+                    await Task.Delay(500 + 250 * i);
+                }
             }
         }
 

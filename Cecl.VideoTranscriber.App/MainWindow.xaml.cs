@@ -42,6 +42,9 @@ namespace Cecl.VideoTranscriber.App
         {
             TextBlockStatus.Text = "";
 
+            if (!string.IsNullOrWhiteSpace(YoutubeTextBox.Text) && !YoutubeTextBox.Text.ToLower().StartsWith("http"))
+                YoutubeTextBox.Text = "https://" + YoutubeTextBox.Text;
+
             SrtInfo srtEng = null;
             Stopwatch stowatch = Stopwatch.StartNew();
 
@@ -64,31 +67,38 @@ namespace Cecl.VideoTranscriber.App
                 AudioInfo audio = await new AudioExtractor()
                     .ExtractAudio(video);
 
-                TextBlockStatus.Text = "Transcribing audio...";
+                TextBlockStatus.Text = "Transcribing...";
 
                 srtEng = await new AudioTranscriber()
                     .TranscribeAudioToSrt(audio, ComboBoxSource.Text, ComboBoxWhisperModel.Text);
+
 
                 if (!string.IsNullOrEmpty(ComboBoxDestination.Text))
                 {
                     TextBlockStatus.Text = $"Translating to {ComboBoxDestination.Text}...";
 
-                    SrtInfo srtPol = await new SrtTraslator()
+                    SrtInfo srtPol =
+                        await new SrtTranslator()
                         .TranslateSrt(
                             srtEng,
                             ComboBoxSource.Text,
                             ComboBoxDestination.Text,
+                                ComboBoxOpenAIModel.Text,
                             openAiApiKey: OpenAiApiKey.Text,
-                            deepseekApiKey: DeepSeekApiKey.Text);
+                                deepseekApiKey: DeepSeekApiKey.Text,
+                                progress: OnTranslationProgress);
 
                     SrtInfo srtEngPol =
-                        await new SrtTraslator().TranslateSrt(
+                        await new SrtTranslator()
+                            .TranslateSrt(
                             srtEng,
                             ComboBoxSource.Text,
                             ComboBoxDestination.Text,
+                                ComboBoxOpenAIModel.Text,
                             twoLanguages: true,
                             openAiApiKey: OpenAiApiKey.Text,
-                            deepseekApiKey: DeepSeekApiKey.Text);
+                                deepseekApiKey: DeepSeekApiKey.Text,
+                                progress: OnTranslationProgress);
                 }
 
                 TextBlockStatus.Text = $"> Job done in {stowatch.Elapsed.TotalSeconds}s <";
@@ -108,6 +118,15 @@ namespace Cecl.VideoTranscriber.App
                 if (srtEng != null)
                     Process.Start("explorer.exe", Path.GetDirectoryName(srtEng.SrtPath));
             }
+        }
+
+        private void OnTranslationProgress(int count, int total)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                TextBlockStatus.Text =
+                    $"> Translating to {ComboBoxDestination.Text} ({count}/{total})... <";
+            });
         }
 
         private void ApiKeyChanged(object sender, TextChangedEventArgs e)

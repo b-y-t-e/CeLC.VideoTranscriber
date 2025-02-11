@@ -49,11 +49,16 @@ public class AudioTranscriber
             index++;
         }
 
-        srtData.SaveTo(outputSrtPath);
+        var mergedSrtData = SrtMerger.MergeCloseSegments(
+            srtData,
+            TimeSpan.FromSeconds(7),
+            100);
+
+        mergedSrtData.SaveTo(outputSrtPath);
 
         return new SrtInfo
         {
-            SrtData = srtData,
+            SrtData = mergedSrtData,
             SrtPath = outputSrtPath,
             SrtTitle = audio.AudioTitle,
         };
