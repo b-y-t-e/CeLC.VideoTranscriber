@@ -62,9 +62,8 @@ namespace CeLC.VideoTranscriber.Library
             }
         }
 
-        public async Task<string> ExecutePrompt(string apiKey, string modelStr, string prompt, string input)
+        public async Task<string> ExecutePrompt(string apiKey, string model, string prompt, string input)
         {
-            var model = (Model)Enum.Parse(typeof(Model), modelStr, true);
             var key = $"{model}|||{prompt}|||{input}";
 
             lock (_cacheLock)
