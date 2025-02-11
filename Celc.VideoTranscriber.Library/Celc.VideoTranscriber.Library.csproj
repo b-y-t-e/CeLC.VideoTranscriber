@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Ater.DeepSeek.Core" Version="1.1.2" />
+        <PackageReference Include="Whisper.net" Version="1.7.4"/>
+        <PackageReference Include="Whisper.net.Runtime" Version="1.7.4" />
+        <PackageReference Include="Whisper.net.Runtime.Vulkan" Version="1.7.4" />
+        <PackageReference Include="Whisper.net.Runtime.Cuda.Windows" Version="1.7.4"/>
+        <PackageReference Include="NAudio" Version="2.2.1"/>
+        <PackageReference Include="YoutubeExplode" Version="6.5.3" />
+        <PackageReference Include="YoutubeExplode.Converter" Version="6.5.3" />
+        <PackageReference Include="OpenAI-DotNet" Version="8.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="ffmpeg_.exe">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+</Project>

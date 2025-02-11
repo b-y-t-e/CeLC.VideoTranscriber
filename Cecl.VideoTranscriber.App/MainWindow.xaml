@@ -1,0 +1,76 @@
+﻿<Window x:Class="Cecl.VideoTranscriber.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Cecl.VideoTranscriber.App"
+        mc:Ignorable="d"
+        Title="CELC / Video Transcriber / v1.0" Height="500" Width="350">
+    <Grid>
+        <DockPanel LastChildFill="True">
+            <Grid DockPanel.Dock="Bottom" Margin="10">
+                <Button Content="Make transcription" Height="30" Click="OnExecuteClick" />
+            </Grid>
+            <Grid DockPanel.Dock="Bottom">
+                <TextBlock x:Name="TextBlockStatus" FontWeight="Bold" Text="" HorizontalAlignment="Center"
+                           FontSize="16" />
+            </Grid>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Video file:" Margin="0,0,0,5" />
+                    <DockPanel Margin="0,0,0,10" LastChildFill="True">
+                        <Button DockPanel.Dock="Right" Content="Browse" Click="BrowseButton_Click" Margin="5,0,0,0" />
+                        <TextBox x:Name="VideoFileTextBox" TextChanged="OnVideoFileTextBoxChanged"
+                                 PreviewKeyDown="OnVideoFileTextBoxKerPressed" />
+                    </DockPanel>
+
+                    <TextBlock Text="Video url:" Margin="0,0,0,5" />
+                    <TextBox x:Name="YoutubeTextBox" Margin="0,0,0,10" />
+
+                    <TextBlock Text="Whisper Model:" Margin="0,0,0,5" />
+                    <ComboBox Margin="0,0,0,10" SelectedIndex="10" x:Name="ComboBoxWhisperModel">
+                        <ComboBoxItem Content="Tiny" />
+                        <ComboBoxItem Content="TinyEn" />
+                        <ComboBoxItem Content="Base" />
+                        <ComboBoxItem Content="BaseEn" />
+                        <ComboBoxItem Content="Small" />
+                        <ComboBoxItem Content="SmallEn" />
+                        <ComboBoxItem Content="Medium" />
+                        <ComboBoxItem Content="MediumEn" />
+                        <ComboBoxItem Content="LargeV1" />
+                        <ComboBoxItem Content="LargeV2" />
+                        <ComboBoxItem Content="LargeV3" />
+                        <ComboBoxItem Content="LargeV3Turbo" />
+                    </ComboBox>
+
+                    <TextBlock Text="Source Language:" Margin="0,0,0,5" />
+                    <ComboBox Margin="0,0,0,10" SelectedIndex="0" x:Name="ComboBoxSource">
+                        <ComboBoxItem Content="English" />
+                        <ComboBoxItem Content="Polish" />
+                        <ComboBoxItem Content="Croatian" />
+                        <ComboBoxItem Content="Slovak" />
+                        <ComboBoxItem Content="Hungarian" />
+                    </ComboBox>
+
+                    <TextBlock Text="Target Language:" Margin="0,0,0,5" />
+                    <ComboBox Margin="0,0,0,10" SelectedIndex="0" x:Name="ComboBoxDestination">
+                        <ComboBoxItem Content="" />
+                        <ComboBoxItem Content="English" />
+                        <ComboBoxItem Content="Polish" />
+                        <ComboBoxItem Content="Croatian" />
+                        <ComboBoxItem Content="Slovak" />
+                        <ComboBoxItem Content="Hungarian" />
+                    </ComboBox>
+
+                    <TextBlock Text="Deepseek ApiKey (only translation):" Margin="0,0,0,5" />
+                    <TextBox x:Name="DeepSeekApiKey" Margin="0,0,0,10" TextChanged="ApiKeyChanged"
+                             PreviewKeyDown="ApiKeyKeyPresed" />
+
+                    <TextBlock Text="OpenAI ApiKey (only translation):" Margin="0,0,0,5" />
+                    <TextBox x:Name="OpenAiApiKey" Margin="0,0,0,10" TextChanged="ApiKeyChanged"
+                             PreviewKeyDown="ApiKeyKeyPresed" />
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Grid>
+</Window>
