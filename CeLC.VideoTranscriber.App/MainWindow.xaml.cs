@@ -134,6 +134,11 @@ namespace CeLC.VideoTranscriber.App
             Dispatcher.BeginInvoke(() => { TextBlockStatus.Text = text; });
         }
 
+        private void OnMuxProgress(string text)
+        {
+            Dispatcher.BeginInvoke(() => { TextBlockStatusMux.Text = text; });
+        }
+
         private void ApiKeyChanged(object sender, TextChangedEventArgs e)
         {
             UpdateValuesOnChange();
@@ -161,6 +166,78 @@ namespace CeLC.VideoTranscriber.App
 
             if (string.IsNullOrEmpty(DeepSeekApiKey.Text) && string.IsNullOrEmpty(OpenAiApiKey.Text))
                 ComboBoxDestination.Text = "";
+        }
+
+        private async void OnMuxExecuteClick(object sender, RoutedEventArgs e)
+        {
+            OnMuxProgress("");
+
+            string? directory = null;
+            Stopwatch stowatch = Stopwatch.StartNew();
+
+            try
+            {
+                this.IsEnabled = false;
+
+                if (String.IsNullOrEmpty(MuxVideoFileTextBox.Text) )
+                    throw new Exception("You must enter a video file.");
+
+                if (!File.Exists(MuxVideoFileTextBox.Text) )
+                    throw new Exception("Video file does not exist.");
+
+                if (String.IsNullOrEmpty(MuxSubtitlesTextBox.Text) )
+                    throw new Exception("You must enter a subtitles file.");
+
+                if (!File.Exists(MuxSubtitlesTextBox.Text) )
+                    throw new Exception("Subtitles file does not exist.");
+
+                directory = Path.GetDirectoryName(MuxVideoFileTextBox.Text);
+
+                OnMuxProgress("Muxing...");
+
+                await new TextMuxerExtractor().MuxVideoWithText(
+                    MuxVideoFileTextBox.Text,
+                    MuxSubtitlesTextBox.Text);
+
+                OnMuxProgress($"> Job done in {stowatch.Elapsed.TotalSeconds}s <");
+
+                MessageBox.Show($"Job done in {stowatch.Elapsed.TotalSeconds}s", "Success", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                OnMuxProgress($"> Error: {ex.Message}, after {stowatch.Elapsed.TotalSeconds}s <");
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                this.IsEnabled = true;
+
+                if (directory != null)
+                    Process.Start("explorer.exe", directory);
+            }
+        }
+
+        private void BrowseMuxVideoFile_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Video files|*.mp4;*.avi;*.mkv|All files|*.*"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+                MuxVideoFileTextBox.Text = openFileDialog.FileName;
+        }
+
+        private void BrowseMuxSubtitles_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Srt|*.srt|All files|*.*"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+                MuxSubtitlesTextBox.Text = openFileDialog.FileName;
         }
     }
 }

@@ -5,87 +5,127 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CeLC.VideoTranscriber.App"
         mc:Ignorable="d"
-        Title="CeLC / Video Transcriber / v1.1" Height="500" Width="350">
+        Title="CeLC / Video Transcriber / v1.2" Height="530" Width="350">
     <Grid>
-        <DockPanel LastChildFill="True">
-            <Grid DockPanel.Dock="Bottom" Margin="10">
-                <Button Content="Start Transcription" Height="30" Click="OnExecuteClick" />
-            </Grid>
-            <Grid DockPanel.Dock="Bottom">
-                <TextBlock x:Name="TextBlockStatus" FontWeight="Bold" Text="" HorizontalAlignment="Center"
-                           FontSize="16" />
-            </Grid>
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel Margin="10">
-
-                    <TextBlock Text="Enter YouTube Link:" Margin="0,0,0,5" />
-                    <TextBox x:Name="YoutubeTextBox" Margin="0,0,0,10" />
-
-                    <TextBlock Text="or select a Video File:" Margin="0,0,0,5" />
-                    <DockPanel Margin="0,0,0,10" LastChildFill="True">
-                        <Button DockPanel.Dock="Right" Content="Browse" Click="BrowseButton_Click" Margin="5,0,0,0" />
-                        <TextBox x:Name="VideoFileTextBox" TextChanged="OnVideoFileTextBoxChanged"
-                                 PreviewKeyDown="OnVideoFileTextBoxKerPressed" />
-                    </DockPanel>
-
-                    <TextBlock Text="Whisper Model:" Margin="0,0,0,5" />
-                    <ComboBox Margin="0,0,0,10" SelectedIndex="11" x:Name="ComboBoxWhisperModel">
-                        <ComboBoxItem Content="Tiny" />
-                        <ComboBoxItem Content="TinyEn" />
-                        <ComboBoxItem Content="Base" />
-                        <ComboBoxItem Content="BaseEn" />
-                        <ComboBoxItem Content="Small" />
-                        <ComboBoxItem Content="SmallEn" />
-                        <ComboBoxItem Content="Medium" />
-                        <ComboBoxItem Content="MediumEn" />
-                        <ComboBoxItem Content="LargeV1" />
-                        <ComboBoxItem Content="LargeV2" />
-                        <ComboBoxItem Content="LargeV3" />
-                        <ComboBoxItem Content="LargeV3Turbo" />
-                    </ComboBox>
-
-                    <TextBlock Text="Original Language:" Margin="0,0,0,5" />
-                    <ComboBox Margin="0,0,0,10" SelectedIndex="0" x:Name="ComboBoxSource">
-                        <ComboBoxItem Content="English" />
-                        <ComboBoxItem Content="Spanish" />
-                        <ComboBoxItem Content="Polish" />
-                        <ComboBoxItem Content="Croatian" />
-                        <ComboBoxItem Content="Slovak" />
-                        <ComboBoxItem Content="Hungarian" />
-                    </ComboBox>
-
-                    <Grid Height="10" />
-
-                    <TextBlock Text="Translation Language (optional):" Margin="0,0,0,5" />
-                    <ComboBox Margin="0,0,0,10" SelectedIndex="0" x:Name="ComboBoxDestination">
-                        <ComboBoxItem Content="" />
-                        <ComboBoxItem Content="English" />
-                        <ComboBoxItem Content="Spanish" />
-                        <ComboBoxItem Content="Polish" />
-                        <ComboBoxItem Content="Croatian" />
-                        <ComboBoxItem Content="Slovak" />
-                        <ComboBoxItem Content="Hungarian" />
-                    </ComboBox>
-
-                    <!-- Nowy ComboBox do wyboru modelu OpenAI (do tłumaczenia) -->
-                    <TextBlock Text="OpenAI Chat Model (for translations):" Margin="0,0,0,5" />
-                    <ComboBox Margin="0,0,0,10" x:Name="ComboBoxOpenAIModel" SelectedIndex="2">
-                        <ComboBoxItem Content="gpt-3.5-turbo" />
-                        <ComboBoxItem Content="gpt-4-turbo" />
-                        <ComboBoxItem Content="gpt-4o" />
-                        <ComboBoxItem Content="gpt-4o-mini" />
-                    </ComboBox>
-
-                    <TextBlock Visibility="Collapsed" Text="DeepSeek API Key (for translations):" Margin="0,0,0,5" />
-                    <TextBox Visibility="Collapsed" x:Name="DeepSeekApiKey" Margin="0,0,0,10" TextChanged="ApiKeyChanged"
-                             PreviewKeyDown="ApiKeyKeyPresed" />
 
 
-                    <TextBlock Text="OpenAI API Key (for translations):" Margin="0,0,0,5" />
-                    <TextBox x:Name="OpenAiApiKey" Margin="0,0,0,10" TextChanged="ApiKeyChanged"
-                             PreviewKeyDown="ApiKeyKeyPresed" />
-                </StackPanel>
-            </ScrollViewer>
-        </DockPanel>
+        <TabControl>
+            <TabItem Header="Transcription">
+                <DockPanel LastChildFill="True">
+                    <Grid DockPanel.Dock="Bottom" Margin="10">
+                        <Button Content="Start Transcription" Height="30" Click="OnExecuteClick" />
+                    </Grid>
+                    <Grid DockPanel.Dock="Bottom">
+                        <TextBlock x:Name="TextBlockStatus" FontWeight="Bold" Text="" HorizontalAlignment="Center"
+                                   FontSize="16" />
+                    </Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="10">
+
+                            <TextBlock Text="Enter a YouTube Link:" Margin="0,0,0,5" />
+                            <TextBox x:Name="YoutubeTextBox" Margin="0,0,0,10" />
+
+                            <TextBlock Text="Or select a video file:" Margin="0,0,0,5" />
+                            <DockPanel Margin="0,0,0,10" LastChildFill="True">
+                                <Button DockPanel.Dock="Right" Content="Browse" Click="BrowseButton_Click"
+                                        Margin="5,0,0,0" />
+                                <TextBox x:Name="VideoFileTextBox" TextChanged="OnVideoFileTextBoxChanged"
+                                         PreviewKeyDown="OnVideoFileTextBoxKerPressed" />
+                            </DockPanel>
+
+                            <TextBlock Text="Select Whisper Model:" Margin="0,0,0,5" />
+                            <ComboBox Margin="0,0,0,10" SelectedIndex="11" x:Name="ComboBoxWhisperModel">
+                                <ComboBoxItem Content="Tiny" />
+                                <ComboBoxItem Content="TinyEn" />
+                                <ComboBoxItem Content="Base" />
+                                <ComboBoxItem Content="BaseEn" />
+                                <ComboBoxItem Content="Small" />
+                                <ComboBoxItem Content="SmallEn" />
+                                <ComboBoxItem Content="Medium" />
+                                <ComboBoxItem Content="MediumEn" />
+                                <ComboBoxItem Content="LargeV1" />
+                                <ComboBoxItem Content="LargeV2" />
+                                <ComboBoxItem Content="LargeV3" />
+                                <ComboBoxItem Content="LargeV3Turbo" />
+                            </ComboBox>
+
+                            <TextBlock Text="Original Language:" Margin="0,0,0,5" />
+                            <ComboBox Margin="0,0,0,10" SelectedIndex="0" x:Name="ComboBoxSource">
+                                <ComboBoxItem Content="English" />
+                                <ComboBoxItem Content="Spanish" />
+                                <ComboBoxItem Content="Polish" />
+                                <ComboBoxItem Content="Croatian" />
+                                <ComboBoxItem Content="Slovak" />
+                                <ComboBoxItem Content="Hungarian" />
+                            </ComboBox>
+
+                            <Grid Height="10" />
+
+                            <TextBlock Text="Translation Language (optional):" Margin="0,0,0,5" />
+                            <ComboBox Margin="0,0,0,10" SelectedIndex="0" x:Name="ComboBoxDestination">
+                                <ComboBoxItem Content="" />
+                                <ComboBoxItem Content="English" />
+                                <ComboBoxItem Content="Spanish" />
+                                <ComboBoxItem Content="Polish" />
+                                <ComboBoxItem Content="Croatian" />
+                                <ComboBoxItem Content="Slovak" />
+                                <ComboBoxItem Content="Hungarian" />
+                            </ComboBox>
+
+                            <!-- OpenAI model selection -->
+                            <TextBlock Text="OpenAI Chat Model (for translations):" Margin="0,0,0,5" />
+                            <ComboBox Margin="0,0,0,10" x:Name="ComboBoxOpenAIModel" SelectedIndex="2">
+                                <ComboBoxItem Content="gpt-3.5-turbo" />
+                                <ComboBoxItem Content="gpt-4-turbo" />
+                                <ComboBoxItem Content="gpt-4o" />
+                                <ComboBoxItem Content="gpt-4o-mini" />
+                            </ComboBox>
+
+                            <TextBlock Visibility="Collapsed" Text="DeepSeek API Key (for translations):"
+                                       Margin="0,0,0,5" />
+                            <TextBox Visibility="Collapsed" x:Name="DeepSeekApiKey" Margin="0,0,0,10"
+                                     TextChanged="ApiKeyChanged"
+                                     PreviewKeyDown="ApiKeyKeyPresed" />
+
+
+                            <TextBlock Text="OpenAI API Key (for translations):" Margin="0,0,0,5" />
+                            <TextBox x:Name="OpenAiApiKey" Margin="0,0,0,10" TextChanged="ApiKeyChanged"
+                                     PreviewKeyDown="ApiKeyKeyPresed" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Subtitle Integration">
+                <DockPanel LastChildFill="True">
+                    <Grid DockPanel.Dock="Bottom" Margin="10">
+                        <Button Content="Integrate subtitles into the video file" Height="30" Click="OnMuxExecuteClick" />
+                    </Grid>
+                    <Grid DockPanel.Dock="Bottom">
+                        <TextBlock x:Name="TextBlockStatusMux" FontWeight="Bold" Text="" HorizontalAlignment="Center"
+                                   FontSize="16" />
+                    </Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="10">
+
+                            <TextBlock Text="Select a video file:" Margin="0,0,0,5" />
+                            <DockPanel Margin="0,0,0,10" LastChildFill="True">
+                                <Button DockPanel.Dock="Right" Content="Browse" Click="BrowseMuxVideoFile_Click"
+                                        Margin="5,0,0,0" />
+                                <TextBox x:Name="MuxVideoFileTextBox" />
+                            </DockPanel>
+
+                            <TextBlock Text="And select subtitles:" Margin="0,0,0,5" />
+                            <DockPanel Margin="0,0,0,10" LastChildFill="True">
+                                <Button DockPanel.Dock="Right" Content="Browse" Click="BrowseMuxSubtitles_Click"
+                                        Margin="5,0,0,0" />
+                                <TextBox x:Name="MuxSubtitlesTextBox" />
+                            </DockPanel>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+
     </Grid>
 </Window>

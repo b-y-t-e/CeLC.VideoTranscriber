@@ -73,3 +73,48 @@ public class AudioExtractor
             await process.WaitForExitAsync();
     }
 }
+
+public class TextMuxerExtractor
+{
+    public async Task MuxVideoWithText(string inputVideoFile, string inputTextFile, string outputFile = null)
+    {
+        if (string.IsNullOrEmpty(outputFile))
+            outputFile = System.IO.Path.Combine(
+                Path.GetDirectoryName(inputVideoFile),
+                $"{Path.GetFileNameWithoutExtension(inputVideoFile)}_with_subtitles{Path.GetExtension(inputVideoFile)}");
+
+        var newTextFile = System.IO.Path.Combine(
+            Path.GetDirectoryName(inputVideoFile),
+            $"{Guid.NewGuid()}{Path.GetExtension(inputTextFile)}");
+
+        var directory = Environment.CurrentDirectory;
+
+        Environment.CurrentDirectory = Path.GetDirectoryName(inputVideoFile);
+        File.Copy(inputTextFile, newTextFile);
+        File.Delete(outputFile);
+
+        try
+        {
+
+            string ffmpegPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg_.exe");
+
+            string arguments =
+                $"-i \"{inputVideoFile}\" -vf \"subtitles={Path.GetFileName(newTextFile)}:force_style='BorderStyle=3,PrimaryColour=&H00FFFFFF,BackColour=&HFF000000,FontSize=26'\" \"{outputFile}\"";
+
+            ProcessStartInfo startInfo = new ProcessStartInfo(ffmpegPath, arguments)
+            {
+                CreateNoWindow = false,
+                UseShellExecute = true,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
+
+            using (Process process = Process.Start(startInfo))
+                await process.WaitForExitAsync();
+        }
+        finally
+        {
+            File.Delete(newTextFile);
+            Environment.CurrentDirectory = directory;
+        }
+    }
+}
