@@ -180,7 +180,9 @@ namespace CeLC.VideoTranscriber.Library
                         $"For each line, output the translated text followed immediately by the delimiter {LineDelimiter}.\n" +
                         "Do not add any extra text, numbering, or commentary.\n" +
                         "If an input line is empty, output only the delimiter.\n" +
-                        "Ensure that the total number of delimiters in the output exactly matches the total number of input lines.";
+                        "Ensure that the total number of delimiters in the output exactly matches the total number of input lines.\n" +
+                        "Please make sure to maintain the original style of expression as much as possible, and note that some fragments may pertain to biblical context. Handle such references with appropriate care and terminology.\n" +
+                        "Avoid literal translations of idiomatic expressions. ";
 
                     // Wywołanie API – Deepseek lub OpenAI.
                     var threadIndex = batch.Index % threadsCount;
