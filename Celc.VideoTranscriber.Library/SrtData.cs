@@ -11,6 +11,11 @@ public class SrtData
             {
                 writer.WriteLine(segment.Index);
                 writer.WriteLine($"{FormatTime(segment.Start)} --> {FormatTime(segment.End)}");
+                if (!string.IsNullOrEmpty(segment.Text2))
+                {
+                    writer.WriteLine(segment.Text2);
+                    writer.WriteLine("----");
+                }
                 writer.WriteLine(segment.Text);
                 writer.WriteLine();
             }
