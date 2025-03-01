@@ -39,13 +39,8 @@ public class AudioTranscriber
 
         await foreach (var segment in processor.ProcessAsync(fileStream))
         {
-            srtData.Segments.Add(new SrtSegment
-            {
-                Index = index,
-                Start = segment.Start,
-                End = segment.End,
-                Text = segment.Text,
-            });
+            srtData.Segments.Add(
+                SrtSegment.From(segment.Text, segment.Start, segment.End,  index));
             index++;
         }
 

@@ -21,13 +21,11 @@ public class SrtMerger
         var mergedSegments = new List<SrtSegment>();
 
         // Inicjujemy pierwszy scalany segment
-        SrtSegment current = new SrtSegment
-        {
-            Index = sortedSegments[0].Index,
-            Start = sortedSegments[0].Start,
-            End = sortedSegments[0].End,
-            Text = sortedSegments[0].Text
-        };
+        SrtSegment current = SrtSegment.From(
+            sortedSegments[0].Text,
+            sortedSegments[0].Start,
+            sortedSegments[0].End,
+            sortedSegments[0].Index);
 
         // Iterujemy po kolejnych segmentach
         for (int i = 1; i < sortedSegments.Count; i++)
@@ -43,7 +41,7 @@ public class SrtMerger
             {
                 // Scalanie tekstu (dodajemy nową linię pomiędzy fragmentami)
                 //current.Text += Environment.NewLine + next.Text;
-                current.Text = current.Text.Trim()  +" " + next.Text.Trim();
+                current.Text = current.Text.Trim()  + " " + next.Text.Trim();
                 // Aktualizujemy czas zakończenia scalonego segmentu
                 current.End = next.End;
             }
@@ -51,13 +49,11 @@ public class SrtMerger
             {
                 // Dodajemy bieżący segment do wyniku i rozpoczynamy nowy segment
                 mergedSegments.Add(current);
-                current = new SrtSegment
-                {
-                    Index = next.Index,
-                    Start = next.Start,
-                    End = next.End,
-                    Text = next.Text
-                };
+                current = SrtSegment.From(
+                    next.Text,
+                    next.Start,
+                    next.End,
+                    next.Index);
             }
         }
         // Dodajemy ostatni segment
