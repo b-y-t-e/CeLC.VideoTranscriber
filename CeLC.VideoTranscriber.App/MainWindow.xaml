@@ -74,11 +74,12 @@
 
                             <!-- OpenAI model selection -->
                             <TextBlock Text="OpenAI Chat Model (for translations):" Margin="0,0,0,5" />
-                            <ComboBox Margin="0,0,0,10" x:Name="ComboBoxOpenAIModel" SelectedIndex="2">
-                                <ComboBoxItem Content="gpt-3.5-turbo" />
-                                <ComboBoxItem Content="gpt-4-turbo" />
+                            <ComboBox Margin="0,0,0,10" x:Name="ComboBoxOpenAIModel" SelectedIndex="0">
+                                <ComboBoxItem Content="o3-mini" />
                                 <ComboBoxItem Content="gpt-4o" />
                                 <ComboBoxItem Content="gpt-4o-mini" />
+                                <ComboBoxItem Content="gpt-4-turbo" />
+                                <ComboBoxItem Content="gpt-3.5-turbo" />
                             </ComboBox>
 
                             <TextBlock Visibility="Collapsed" Text="DeepSeek API Key (for translations):"
