@@ -74,7 +74,7 @@ namespace CeLC.VideoTranscriber.Library
                 }
             }
 
-            using var api = new OpenAIClient(apiKey);
+            using var api = new OpenAIClient(apiKey, OpenAIClientSettings.Default, new HttpClient() { Timeout = TimeSpan.FromSeconds(900) });
 
             var messages = new List<Message>
             {
@@ -82,12 +82,28 @@ namespace CeLC.VideoTranscriber.Library
                 new Message(Role.User, new List<Content> { input })
             };
 
-            // Używamy modelu GPT4oMini lub innego dostępnego w bibliotece.
-            // var chatRequest = new ChatRequest(messages, model: Model.GPT4oMini);
             var chatRequest = new ChatRequest(messages, model: model);
-            var response = await api.ChatEndpoint.GetCompletionAsync(chatRequest);
-
-            var text = response.FirstChoice.Message.Content?.ToString();
+            string text = null;
+            int retries = 5;
+            for (int i = 0; i < retries; i++)
+            {
+                try
+                {
+                    var response = await api.ChatEndpoint.GetCompletionAsync(chatRequest);
+                    text = response.FirstChoice.Message.Content?.ToString();
+                    break; // Exit the loop if successful
+                }
+                catch (TimeoutException)
+                {
+                    if (i == retries - 1)
+                        throw; // Rethrow the exception if max retries reached
+                }
+                catch (Exception ex)
+                {
+                    if (!ex.Message.ToLower().Contains("timeout") || i == retries - 1)
+                        throw;
+                }
+            }
 
             lock (_cacheLock)
             {
