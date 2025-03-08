@@ -58,7 +58,8 @@
               Content="&gt;"
               DockPanel.Dock="Right" Margin="10, 0, 0, 0" Padding="10"
               Click="BtnNext_Click" />
-      <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+      <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                  x:Name="panelEditors">
         <!-- Poprzedni napis -->
         <Label x:Name="labelTimePrevious" Content="" HorizontalAlignment="Left" FontSize="12"/>
         <TextBox x:Name="textBoxSubtitlePrevious"

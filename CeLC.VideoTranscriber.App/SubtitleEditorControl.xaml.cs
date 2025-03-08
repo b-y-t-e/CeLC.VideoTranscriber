@@ -2,7 +2,6 @@ using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,11 +14,15 @@ namespace SubtitleEditorDemo
     {
         private bool isUpdatingSubtitle = false;
         private bool isDraggingSlider = false;
-
-        // Obiekt zawierający segmenty napisów
-        public SrtData SrtData { get; set; } = new SrtData();
-
+        private bool isPlaying;
+        private DispatcherTimer timer;
+        private int currentSegmentIndex = -1;
         private string _videoPath;
+        private string _subtitlesPath;
+
+        // Object containing subtitle segments.
+        public SrtData SrtData { get; set; } =
+            new SrtData();
 
         public string VideoPath
         {
@@ -32,8 +35,6 @@ namespace SubtitleEditorDemo
             }
         }
 
-        private string _subtitlesPath;
-
         public string SubtitlesPath
         {
             get => _subtitlesPath;
@@ -45,12 +46,9 @@ namespace SubtitleEditorDemo
             }
         }
 
-        // Kontrolka jest gotowa, gdy wybrano oba pliki
-        public bool IsReady => !string.IsNullOrEmpty(VideoPath) && !string.IsNullOrEmpty(SubtitlesPath);
-
-        private bool isPlaying;
-        private DispatcherTimer timer;
-        private int currentSegmentIndex = -1;
+        // Control is ready when both files are selected.
+        public bool IsReady =>
+            !string.IsNullOrEmpty(VideoPath) && !string.IsNullOrEmpty(SubtitlesPath);
 
         public SubtitleEditorControl()
         {
@@ -58,29 +56,23 @@ namespace SubtitleEditorDemo
             DataContext = this;
             SetupTimer();
 
+            // Subscribe to media events.
             mediaElement.MediaOpened += (s, ev) =>
             {
-                // Odtwarzacz załadował plik wideo
+                // Media loaded successfully.
             };
 
             mediaElement.MediaFailed += (s, ev) =>
             {
-                MessageBox.Show("MediaFailed – nie można odtworzyć pliku: " + ev.ErrorException.Message);
+                MessageBox.Show("MediaFailed - cannot play file: " + ev.ErrorException.Message);
                 VideoPath = "";
                 mediaElement.Source = null;
             };
+
+            UpdateSubtitleViews();
         }
 
-        private void SetupTimer()
-        {
-            timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(200)
-            };
-            timer.Tick += Timer_Tick;
-        }
-
-        // Kliknięcie na wideo – przełączenie play/pause
+        // Toggle play/pause when video is clicked.
         private void MediaElement_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (isPlaying)
@@ -91,25 +83,7 @@ namespace SubtitleEditorDemo
             e.Handled = true;
         }
 
-        private void Play()
-        {
-            if (isPlaying)
-                return;
-            mediaElement.Play();
-            timer.Start();
-            isPlaying = true;
-        }
-
-        private void Stop()
-        {
-            if (!isPlaying)
-                return;
-            mediaElement.Pause();
-            timer.Stop();
-            isPlaying = false;
-        }
-
-        // Timer aktualizuje slider i wyszukuje bieżący segment
+        // Timer tick: update slider and search for the current subtitle segment.
         private void Timer_Tick(object sender, EventArgs e)
         {
             if (mediaElement.NaturalDuration.HasTimeSpan)
@@ -123,16 +97,7 @@ namespace SubtitleEditorDemo
                 if (IsReady)
                 {
                     TimeSpan currentTime = mediaElement.Position;
-                    int index = -1;
-                    for (int i = 0; i < SrtData.Segments.Count; i++)
-                    {
-                        var segment = SrtData.Segments[i];
-                        if (currentTime >= segment.Start && currentTime <= segment.End)
-                        {
-                            index = i;
-                            break;
-                        }
-                    }
+                    int index = FindSegmentIndex(currentTime);
 
                     if (index != currentSegmentIndex)
                     {
@@ -143,72 +108,12 @@ namespace SubtitleEditorDemo
             }
         }
 
-        // Metoda pomocnicza do formatowania czasu
-        private string FormatTime(TimeSpan time)
-        {
-            return string.Format("{0:D2}:{1:D2}:{2:D2},{3:D3}",
-                time.Hours, time.Minutes, time.Seconds, time.Milliseconds);
-        }
-
-        // Aktualizuje pola tekstowe i etykiety z czasem dla poprzedniego, bieżącego i następnego segmentu
-        private void UpdateSubtitleViews()
-        {
-            isUpdatingSubtitle = true;
-            if (currentSegmentIndex >= 0 && currentSegmentIndex < SrtData.Segments.Count)
-            {
-                // Bieżący napis
-                textBoxSubtitle.Text = SrtData.Segments[currentSegmentIndex].Text;
-                labelTimeCurrent.Content = FormatTime(SrtData.Segments[currentSegmentIndex].Start);
-
-                // Poprzedni napis
-                if (currentSegmentIndex > 0)
-                {
-                    textBoxSubtitlePrevious.Text = SrtData.Segments[currentSegmentIndex - 1].Text;
-                    labelTimePrevious.Content = FormatTime(SrtData.Segments[currentSegmentIndex - 1].Start);
-                }
-                else
-                {
-                    textBoxSubtitlePrevious.Text = string.Empty;
-                    labelTimePrevious.Content = string.Empty;
-                }
-
-                // Następny napis
-                if (currentSegmentIndex < SrtData.Segments.Count - 1)
-                {
-                    textBoxSubtitleNext.Text = SrtData.Segments[currentSegmentIndex + 1].Text;
-                    labelTimeNext.Content = FormatTime(SrtData.Segments[currentSegmentIndex + 1].Start);
-                }
-                else
-                {
-                    textBoxSubtitleNext.Text = string.Empty;
-                    labelTimeNext.Content = string.Empty;
-                }
-            }
-            else
-            {
-                textBoxSubtitlePrevious.Text = "";
-                textBoxSubtitle.Text = "";
-                textBoxSubtitleNext.Text = "";
-                labelTimePrevious.Content = "";
-                labelTimeCurrent.Content = "";
-                labelTimeNext.Content = "";
-            }
-
-            isUpdatingSubtitle = false;
-        }
-
-        // Obsługa zdarzeń TextChanged dla trzech pól – każda zmiana zatrzymuje film i zapisuje tekst
+        // TextChanged events for subtitle text boxes.
         private void TextBoxSubtitlePrevious_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!isUpdatingSubtitle && currentSegmentIndex > 0)
             {
-                if (isPlaying)
-                {
-                    mediaElement.Pause();
-                    timer.Stop();
-                    isPlaying = false;
-                }
-
+                PausePlaybackIfPlaying();
                 SrtData.Segments[currentSegmentIndex - 1].Text = textBoxSubtitlePrevious.Text;
             }
         }
@@ -217,13 +122,7 @@ namespace SubtitleEditorDemo
         {
             if (!isUpdatingSubtitle && currentSegmentIndex >= 0)
             {
-                if (isPlaying)
-                {
-                    mediaElement.Pause();
-                    timer.Stop();
-                    isPlaying = false;
-                }
-
+                PausePlaybackIfPlaying();
                 SrtData.Segments[currentSegmentIndex].Text = textBoxSubtitle.Text;
             }
         }
@@ -232,18 +131,12 @@ namespace SubtitleEditorDemo
         {
             if (!isUpdatingSubtitle && currentSegmentIndex < SrtData.Segments.Count - 1)
             {
-                if (isPlaying)
-                {
-                    mediaElement.Pause();
-                    timer.Stop();
-                    isPlaying = false;
-                }
-
+                PausePlaybackIfPlaying();
                 SrtData.Segments[currentSegmentIndex + 1].Text = textBoxSubtitleNext.Text;
             }
         }
 
-        // Obsługa zdarzeń myszy dla slidera
+        // Slider events.
         private void SliderPosition_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             isDraggingSlider = true;
@@ -258,7 +151,7 @@ namespace SubtitleEditorDemo
             }
         }
 
-        // Wybór pliku wideo
+        // Button click events.
         private void BtnBrowseVideo_Click(object sender, RoutedEventArgs e)
         {
             var ofd = new OpenFileDialog
@@ -267,7 +160,7 @@ namespace SubtitleEditorDemo
             };
             if (ofd.ShowDialog() == true)
             {
-                if (File.Exists(VideoPath))
+                if (File.Exists(ofd.FileName))
                 {
                     VideoPath = ofd.FileName;
                     mediaElement.Source = new Uri(VideoPath);
@@ -275,7 +168,6 @@ namespace SubtitleEditorDemo
             }
         }
 
-        // Wybór pliku napisów
         private void BtnBrowseSubtitles_Click(object sender, RoutedEventArgs e)
         {
             var ofd = new OpenFileDialog
@@ -284,28 +176,27 @@ namespace SubtitleEditorDemo
             };
             if (ofd.ShowDialog() == true)
             {
-                SubtitlesPath = ofd.FileName;
-                if (File.Exists(SubtitlesPath))
+                if (File.Exists(ofd.FileName))
                 {
+                    SubtitlesPath = ofd.FileName;
                     SrtData.Segments.Clear();
                     SrtData.LoadFrom(SubtitlesPath);
                 }
             }
         }
 
-        // Zapis napisów do pliku
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             if (!IsReady)
             {
-                //MessageBox.Show("No video or subtitles selected!");
+                // Optionally, show a message like "No video or subtitles selected!"
                 return;
             }
 
             var sfd = new SaveFileDialog
             {
                 Filter = "Subtitle Files|*.srt|All Files|*.*",
-                FileName = Path.GetFileName(this.SubtitlesPath) // "subtitles_modified.srt"
+                FileName = Path.GetFileName(SubtitlesPath)
             };
 
             if (sfd.ShowDialog() == true)
@@ -314,10 +205,11 @@ namespace SubtitleEditorDemo
             }
         }
 
-        // Nawigacja do poprzedniego segmentu
         private void BtnPrevious_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsReady || !mediaElement.CanPause) return;
+            if (!IsReady || !mediaElement.CanPause)
+                return;
+
             if (currentSegmentIndex > 0)
             {
                 bool wasPlaying = isPlaying;
@@ -325,7 +217,7 @@ namespace SubtitleEditorDemo
                     Stop();
 
                 currentSegmentIndex--;
-                mediaElement.Position = SrtData.Segments[currentSegmentIndex].Start + TimeSpan.FromMilliseconds(100);
+                NavigateToCurrentSegment();
                 UpdateSubtitleViews();
 
                 if (wasPlaying)
@@ -333,10 +225,11 @@ namespace SubtitleEditorDemo
             }
         }
 
-        // Nawigacja do następnego segmentu
         private void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsReady || !mediaElement.CanPause) return;
+            if (!IsReady || !mediaElement.CanPause)
+                return;
+
             if (currentSegmentIndex < SrtData.Segments.Count - 1)
             {
                 bool wasPlaying = isPlaying;
@@ -344,7 +237,7 @@ namespace SubtitleEditorDemo
                     Stop();
 
                 currentSegmentIndex++;
-                mediaElement.Position = SrtData.Segments[currentSegmentIndex].Start + TimeSpan.FromMilliseconds(100);
+                NavigateToCurrentSegment();
                 UpdateSubtitleViews();
 
                 if (wasPlaying)
@@ -352,7 +245,108 @@ namespace SubtitleEditorDemo
             }
         }
 
-        #region INotifyPropertyChanged Members
+        private void SetupTimer()
+        {
+            timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(200)
+            };
+            timer.Tick += Timer_Tick;
+        }
+
+        private void Play()
+        {
+            if (isPlaying)
+                return;
+
+            mediaElement.Play();
+            timer.Start();
+            isPlaying = true;
+        }
+
+        private void Stop()
+        {
+            if (!isPlaying)
+                return;
+
+            mediaElement.Pause();
+            timer.Stop();
+            isPlaying = false;
+        }
+
+        // Pauses playback if currently playing.
+        private void PausePlaybackIfPlaying()
+        {
+            if (isPlaying)
+                Stop();
+        }
+
+        // Finds the index of the subtitle segment corresponding to the given time.
+        private int FindSegmentIndex(TimeSpan time)
+        {
+            return SrtData.Segments.FindIndex(segment => time >= segment.Start && time <= segment.End);
+        }
+
+        // Formats a TimeSpan into a subtitle-friendly string.
+        private string FormatTime(TimeSpan time)
+        {
+            return string.Format("{0:D2}:{1:D2}:{2:D2},{3:D3}",
+                time.Hours, time.Minutes, time.Seconds, time.Milliseconds);
+        }
+
+        // Updates text boxes and labels for the previous, current, and next segments.
+        private void UpdateSubtitleViews()
+        {
+            isUpdatingSubtitle = true;
+            if (currentSegmentIndex >= 0 && currentSegmentIndex < SrtData.Segments.Count)
+            {
+                panelEditors.IsEnabled = true;
+                // Current subtitle.
+                textBoxSubtitle.Text = SrtData.Segments[currentSegmentIndex].Text;
+                labelTimeCurrent.Content = FormatTime(SrtData.Segments[currentSegmentIndex].Start);
+
+                // Previous subtitle.
+                if (currentSegmentIndex > 0)
+                {
+                    textBoxSubtitlePrevious.Text = SrtData.Segments[currentSegmentIndex - 1].Text;
+                    labelTimePrevious.Content = FormatTime(SrtData.Segments[currentSegmentIndex - 1].Start);
+                }
+                else
+                {
+                    textBoxSubtitlePrevious.Text = string.Empty;
+                    labelTimePrevious.Content = string.Empty;
+                }
+
+                // Next subtitle.
+                if (currentSegmentIndex < SrtData.Segments.Count - 1)
+                {
+                    textBoxSubtitleNext.Text = SrtData.Segments[currentSegmentIndex + 1].Text;
+                    labelTimeNext.Content = FormatTime(SrtData.Segments[currentSegmentIndex + 1].Start);
+                }
+                else
+                {
+                    textBoxSubtitleNext.Text = string.Empty;
+                    labelTimeNext.Content = string.Empty;
+                }
+            }
+            else
+            {
+                panelEditors.IsEnabled = false;
+                textBoxSubtitlePrevious.Text = "";
+                textBoxSubtitle.Text = "";
+                textBoxSubtitleNext.Text = "";
+                labelTimePrevious.Content = "";
+                labelTimeCurrent.Content = "";
+                labelTimeNext.Content = "";
+            }
+            isUpdatingSubtitle = false;
+        }
+
+        // Navigates to the start position of the current segment (with a small offset).
+        private void NavigateToCurrentSegment()
+        {
+            mediaElement.Position = SrtData.Segments[currentSegmentIndex].Start + TimeSpan.FromMilliseconds(100);
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -361,6 +355,5 @@ namespace SubtitleEditorDemo
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
         }
 
-        #endregion
     }
 }
