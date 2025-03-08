@@ -2,6 +2,7 @@ using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -21,8 +22,7 @@ namespace SubtitleEditorDemo
         private string _subtitlesPath;
 
         // Object containing subtitle segments.
-        public SrtData SrtData { get; set; } =
-            new SrtData();
+        public SrtData SrtData { get; set; } = new SrtData();
 
         public string VideoPath
         {
@@ -94,16 +94,21 @@ namespace SubtitleEditorDemo
                     sliderPosition.Value = mediaElement.Position.TotalSeconds;
                 }
 
-                if (IsReady)
-                {
-                    TimeSpan currentTime = mediaElement.Position;
-                    int index = FindSegmentIndex(currentTime);
+                UpdateSubtitles();
+            }
+        }
 
-                    if (index != currentSegmentIndex)
-                    {
-                        currentSegmentIndex = index;
-                        UpdateSubtitleViews();
-                    }
+        private void UpdateSubtitles(bool forceUpdate = false)
+        {
+            if (IsReady)
+            {
+                TimeSpan currentTime = mediaElement.Position;
+                int index = FindSegmentIndex(currentTime);
+
+                if (index != currentSegmentIndex || forceUpdate)
+                {
+                    currentSegmentIndex = index;
+                    UpdateSubtitleViews();
                 }
             }
         }
@@ -164,6 +169,15 @@ namespace SubtitleEditorDemo
                 {
                     VideoPath = ofd.FileName;
                     mediaElement.Source = new Uri(VideoPath);
+
+                    var srtPath = Path.ChangeExtension(VideoPath, "srt");
+                    if (File.Exists(srtPath))
+                    {
+                        SubtitlesPath = srtPath;
+                        SrtData.Segments.Clear();
+                        SrtData.LoadFrom(SubtitlesPath);
+                        UpdateSubtitles(true);
+                    }
                 }
             }
         }
@@ -181,6 +195,7 @@ namespace SubtitleEditorDemo
                     SubtitlesPath = ofd.FileName;
                     SrtData.Segments.Clear();
                     SrtData.LoadFrom(SubtitlesPath);
+                    UpdateSubtitles(true);
                 }
             }
         }
@@ -301,32 +316,37 @@ namespace SubtitleEditorDemo
             if (currentSegmentIndex >= 0 && currentSegmentIndex < SrtData.Segments.Count)
             {
                 panelEditors.IsEnabled = true;
-                // Current subtitle.
+                // Bieżący napis.
                 textBoxSubtitle.Text = SrtData.Segments[currentSegmentIndex].Text;
-                labelTimeCurrent.Content = FormatTime(SrtData.Segments[currentSegmentIndex].Start);
+                labelTimeCurrent.Text = FormatTime(SrtData.Segments[currentSegmentIndex].Start);
+                textBoxOriginalCurrent.Text = SrtData.Segments[currentSegmentIndex].Text2;
 
-                // Previous subtitle.
+                // Poprzedni napis.
                 if (currentSegmentIndex > 0)
                 {
                     textBoxSubtitlePrevious.Text = SrtData.Segments[currentSegmentIndex - 1].Text;
-                    labelTimePrevious.Content = FormatTime(SrtData.Segments[currentSegmentIndex - 1].Start);
+                    labelTimePrevious.Text = FormatTime(SrtData.Segments[currentSegmentIndex - 1].Start);
+                    textBoxOriginalPrevious.Text = SrtData.Segments[currentSegmentIndex - 1].Text2;
                 }
                 else
                 {
                     textBoxSubtitlePrevious.Text = string.Empty;
-                    labelTimePrevious.Content = string.Empty;
+                    labelTimePrevious.Text = string.Empty;
+                    textBoxOriginalPrevious.Text = string.Empty;
                 }
 
-                // Next subtitle.
+                // Następny napis.
                 if (currentSegmentIndex < SrtData.Segments.Count - 1)
                 {
                     textBoxSubtitleNext.Text = SrtData.Segments[currentSegmentIndex + 1].Text;
-                    labelTimeNext.Content = FormatTime(SrtData.Segments[currentSegmentIndex + 1].Start);
+                    labelTimeNext.Text = FormatTime(SrtData.Segments[currentSegmentIndex + 1].Start);
+                    textBoxOriginalNext.Text = SrtData.Segments[currentSegmentIndex + 1].Text2;
                 }
                 else
                 {
                     textBoxSubtitleNext.Text = string.Empty;
-                    labelTimeNext.Content = string.Empty;
+                    labelTimeNext.Text = string.Empty;
+                    textBoxOriginalNext.Text = string.Empty;
                 }
             }
             else
@@ -335,9 +355,12 @@ namespace SubtitleEditorDemo
                 textBoxSubtitlePrevious.Text = "";
                 textBoxSubtitle.Text = "";
                 textBoxSubtitleNext.Text = "";
-                labelTimePrevious.Content = "";
-                labelTimeCurrent.Content = "";
-                labelTimeNext.Content = "";
+                labelTimePrevious.Text = "";
+                labelTimeCurrent.Text = "";
+                labelTimeNext.Text = "";
+                textBoxOriginalPrevious.Text = "";
+                textBoxOriginalCurrent.Text = "";
+                textBoxOriginalNext.Text = "";
             }
             isUpdatingSubtitle = false;
         }
@@ -354,6 +377,5 @@ namespace SubtitleEditorDemo
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
         }
-
     }
 }
