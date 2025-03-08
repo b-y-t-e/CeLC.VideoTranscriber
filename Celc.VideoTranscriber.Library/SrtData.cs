@@ -1,29 +1,96 @@
-﻿namespace CeLC.VideoTranscriber.Library;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
-public class SrtData
+namespace CeLC.VideoTranscriber.Library
 {
-    public List<SrtSegment> Segments { get; set; } = new List<SrtSegment>();
-
-    public void SaveTo(string outputSrtPath)
+    public class SrtData
     {
-        using (StreamWriter writer = new StreamWriter(outputSrtPath))
-            foreach (var segment in Segments)
+        public List<SrtSegment> Segments { get; set; } = new List<SrtSegment>();
+
+        public void SaveTo(string outputSrtPath)
+        {
+            using (StreamWriter writer = new StreamWriter(outputSrtPath))
             {
-                writer.WriteLine(segment.Index);
-                writer.WriteLine($"{FormatTime(segment.Start)} --> {FormatTime(segment.End)}");
-                if (!string.IsNullOrEmpty(segment.Text2))
+                foreach (var segment in Segments)
                 {
-                    writer.WriteLine(segment.Text2);
-                    writer.WriteLine("----");
+                    writer.WriteLine(segment.Index);
+                    writer.WriteLine($"{FormatTime(segment.Start)} --> {FormatTime(segment.End)}");
+                    if (!string.IsNullOrEmpty(segment.Text2))
+                    {
+                        writer.WriteLine(segment.Text2);
+                        writer.WriteLine("----");
+                    }
+                    writer.WriteLine(segment.Text);
+                    writer.WriteLine();
                 }
-                writer.WriteLine(segment.Text);
-                writer.WriteLine();
             }
-    }
+        }
 
-    string FormatTime(TimeSpan time)
-    {
-        return string.Format("{0:D2}:{1:D2}:{2:D2},{3:D3}",
-            time.Hours, time.Minutes, time.Seconds, time.Milliseconds);
+        private string FormatTime(TimeSpan time)
+        {
+            return string.Format("{0:D2}:{1:D2}:{2:D2},{3:D3}",
+                time.Hours, time.Minutes, time.Seconds, time.Milliseconds);
+        }
+
+        private TimeSpan ParseTime(string timeStr)
+        {
+            return TimeSpan.ParseExact(timeStr, @"hh\:mm\:ss\,fff", null);
+        }
+
+        public void LoadFrom(string inputSrtPath)
+        {
+            if (!File.Exists(inputSrtPath))
+            {
+                throw new Exception("Plik z napisami nie został znaleziony.");
+            }
+
+            string content = File.ReadAllText(inputSrtPath);
+            var segmentsBlocks = content.Split(new string[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var block in segmentsBlocks)
+            {
+                var lines = block.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                if (lines.Length < 2) continue;
+                if (!int.TryParse(lines[0].Trim(), out int index))
+                    continue;
+                var timeParts = lines[1].Split(new string[] { " --> " }, StringSplitOptions.None);
+                if (timeParts.Length != 2)
+                    continue;
+                TimeSpan start, end;
+                try
+                {
+                    start = ParseTime(timeParts[0].Trim());
+                    end = ParseTime(timeParts[1].Trim());
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Błąd podczas parsowania czasu: {ex.Message}");
+                }
+
+                string text2 = null;
+                string text = null;
+                if (lines.Length >= 3)
+                {
+                    if (lines.Length >= 4 && !string.IsNullOrWhiteSpace(lines[2]) && lines[3].Trim() == "----")
+                    {
+                        text2 = lines[2];
+                        if (lines.Length > 4)
+                        {
+                            text = string.Join(Environment.NewLine, lines.Skip(4));
+                        }
+                    }
+                    else
+                    {
+                        text = string.Join(Environment.NewLine, lines.Skip(2));
+                    }
+                }
+
+                var segment = SrtSegment.From(text, start, end, index);
+                if (!string.IsNullOrEmpty(text2))
+                    segment.Text2 = text2;
+                Segments.Add(segment);
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CeLC.VideoTranscriber.App"
+        xmlns:local2="clr-namespace:SubtitleEditorDemo"
         mc:Ignorable="d"
         Title="CeLC / Video Transcriber / v1.2" Height="530" Width="350">
     <Grid>
@@ -125,6 +126,9 @@
                         </StackPanel>
                     </ScrollViewer>
                 </DockPanel>
+            </TabItem>
+            <TabItem Header="Editor">
+                <local2:SubtitleEditorControl />
             </TabItem>
         </TabControl>
 
