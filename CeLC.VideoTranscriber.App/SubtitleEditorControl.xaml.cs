@@ -69,6 +69,18 @@ namespace SubtitleEditorDemo
                 mediaElement.Source = null;
             };
 
+            this.PreviewMouseWheel += (s, ev) =>
+            {
+                if (ev.Delta > 0)
+                {
+                    this.BtnPrevious_Click( null, null );
+                }
+                else
+                {
+                    this.BtnNext_Click( null, null );
+                }
+            };
+
             UpdateSubtitleViews();
         }
 
@@ -228,7 +240,7 @@ namespace SubtitleEditorDemo
 
         private void BtnPrevious_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsReady || !mediaElement.CanPause)
+            if (!IsReady) // || !mediaElement.CanPause)
                 return;
 
             if (currentSegmentIndex > 0)
@@ -248,7 +260,7 @@ namespace SubtitleEditorDemo
 
         private void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsReady || !mediaElement.CanPause)
+            if (!IsReady ) //|| !mediaElement.CanPause)
                 return;
 
             if (currentSegmentIndex < SrtData.Segments.Count - 1)
