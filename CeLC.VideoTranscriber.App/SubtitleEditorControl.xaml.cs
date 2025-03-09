@@ -24,6 +24,11 @@ namespace SubtitleEditorDemo
         // Object containing subtitle segments.
         public SrtData SrtData { get; set; } = new SrtData();
 
+        public SrtSegment CurrentSegment =>
+            currentSegmentIndex >= 0 && currentSegmentIndex < SrtData.Segments.Count
+                ? SrtData.Segments[currentSegmentIndex]
+                : null;
+
         public string VideoPath
         {
             get => _videoPath;
@@ -73,11 +78,11 @@ namespace SubtitleEditorDemo
             {
                 if (ev.Delta > 0)
                 {
-                    this.BtnPrevious_Click( null, null );
+                    this.BtnPrevious_Click(null, null);
                 }
                 else
                 {
-                    this.BtnNext_Click( null, null );
+                    this.BtnNext_Click(null, null);
                 }
             };
 
@@ -245,6 +250,13 @@ namespace SubtitleEditorDemo
 
             if (currentSegmentIndex > 0)
             {
+                var diff = mediaElement.Position - CurrentSegment?.Start;
+                if (diff?.TotalMilliseconds > 500)
+                {
+                    mediaElement.Position = CurrentSegment.Start + TimeSpan.FromMilliseconds(100);
+                    return;
+                }
+
                 bool wasPlaying = isPlaying;
                 if (isPlaying)
                     Stop();
@@ -260,7 +272,7 @@ namespace SubtitleEditorDemo
 
         private void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsReady ) //|| !mediaElement.CanPause)
+            if (!IsReady) //|| !mediaElement.CanPause)
                 return;
 
             if (currentSegmentIndex < SrtData.Segments.Count - 1)
