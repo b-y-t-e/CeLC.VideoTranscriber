@@ -208,7 +208,13 @@ namespace SubtitleEditorDemo
                 return;
             }
 
-            var sfd = new SaveFileDialog
+            var bckPath = SubtitlesPath + ".bak";
+            if (!File.Exists(bckPath))
+                File.Copy(SubtitlesPath, bckPath);
+
+            SrtData.SaveTo(SubtitlesPath);
+
+            /*var sfd = new SaveFileDialog
             {
                 Filter = "Subtitle Files|*.srt|All Files|*.*",
                 FileName = Path.GetFileName(SubtitlesPath)
@@ -217,7 +223,7 @@ namespace SubtitleEditorDemo
             if (sfd.ShowDialog() == true)
             {
                 SrtData.SaveTo(sfd.FileName);
-            }
+            }*/
         }
 
         private void BtnPrevious_Click(object sender, RoutedEventArgs e)
@@ -299,7 +305,20 @@ namespace SubtitleEditorDemo
         // Finds the index of the subtitle segment corresponding to the given time.
         private int FindSegmentIndex(TimeSpan time)
         {
-            return SrtData.Segments.FindIndex(segment => time >= segment.Start && time <= segment.End);
+            var index = SrtData
+                .Segments
+                .FindIndex(segment => time >= segment.Start && time <= segment.End);
+
+            if (index >= 0)
+                return index;
+
+            index = SrtData
+                .Segments
+                .OrderBy(x => x.Start)
+                .ToList()
+                .FindIndex(segment => time < segment.Start);
+
+            return index;
         }
 
         // Formats a TimeSpan into a subtitle-friendly string.
@@ -362,6 +381,7 @@ namespace SubtitleEditorDemo
                 textBoxOriginalCurrent.Text = "";
                 textBoxOriginalNext.Text = "";
             }
+
             isUpdatingSubtitle = false;
         }
 
