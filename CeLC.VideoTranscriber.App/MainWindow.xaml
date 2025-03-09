@@ -97,6 +97,9 @@
                     </ScrollViewer>
                 </DockPanel>
             </TabItem>
+            <TabItem Header="Editor">
+                <local2:SubtitleEditorControl />
+            </TabItem>
             <TabItem Header="Subtitle Integration">
                 <DockPanel LastChildFill="True">
                     <Grid DockPanel.Dock="Bottom" Margin="10">
@@ -126,9 +129,6 @@
                         </StackPanel>
                     </ScrollViewer>
                 </DockPanel>
-            </TabItem>
-            <TabItem Header="Editor">
-                <local2:SubtitleEditorControl />
             </TabItem>
         </TabControl>
 
