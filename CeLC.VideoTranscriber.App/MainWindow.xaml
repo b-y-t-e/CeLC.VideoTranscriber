@@ -97,7 +97,7 @@
                     </ScrollViewer>
                 </DockPanel>
             </TabItem>
-            <TabItem Header="Editor">
+            <TabItem Header="Subtitles editor">
                 <local2:SubtitleEditorControl />
             </TabItem>
             <TabItem Header="Subtitle Integration">
@@ -124,6 +124,19 @@
                                 <Button DockPanel.Dock="Right" Content="Browse" Click="BrowseMuxSubtitles_Click"
                                         Margin="5,0,0,0" />
                                 <TextBox x:Name="MuxSubtitlesTextBox" />
+                            </DockPanel>
+
+
+                            <TextBlock Text="Specify Time Range (optional):" Margin="0,0,0,5" />
+                            <DockPanel Margin="0,0,0,10" LastChildFill="True">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="From:" Margin="0,0,5,0" VerticalAlignment="Center" />
+                                    <TextBox Width="50" x:Name="TimeFromTextBox"
+                                             ToolTip="Enter start time (e.g., 00:00:05)" />
+                                    <TextBlock Text="To:" Margin="10,0,5,0" VerticalAlignment="Center" />
+                                    <TextBox Width="50" x:Name="TimeToTextBox"
+                                             ToolTip="Enter end time (e.g., 00:00:10)" />
+                                </StackPanel>
                             </DockPanel>
 
                         </StackPanel>

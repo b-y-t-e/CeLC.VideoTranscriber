@@ -6,7 +6,7 @@ public class SrtSegment
     public TimeSpan End { get; set; }
     public TimeSpan Start { get; set; }
     public int Index { get; set; }
-    public string Text2 { get; set; }
+    public string TextOriginal { get; set; }
 
     public static SrtSegment From(string text, TimeSpan start, TimeSpan end, int index)
     {
@@ -14,21 +14,21 @@ public class SrtSegment
         return new SrtSegment
         {
             Text = text,
-            Text2 = "",
+            TextOriginal = "",
             Start = start,
             End = end,
             Index = index
         };
     }
 
-    public static SrtSegment From(string text, string text2, TimeSpan start, TimeSpan end, int index)
+    public static SrtSegment From(string text, string textOriginal, TimeSpan start, TimeSpan end, int index)
     {
         text = ProcessText(text);
-        text2 = ProcessText(text2);
+        textOriginal = ProcessText(textOriginal);
         return new SrtSegment
         {
             Text = text,
-            Text2 = text2,
+            TextOriginal = textOriginal,
             Start = start,
             End = end,
             Index = index

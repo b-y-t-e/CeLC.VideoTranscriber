@@ -76,7 +76,12 @@ public class AudioExtractor
 
 public class TextMuxerExtractor
 {
-    public async Task MuxVideoWithText(string inputVideoFile, string inputTextFile, string outputFile = null)
+    public async Task MuxVideoWithText(
+        string inputVideoFile,
+        string inputTextFile,
+        string startTime,
+        string endTime,
+        string outputFile = null)
     {
         if (string.IsNullOrEmpty(outputFile))
             outputFile = System.IO.Path.Combine(
@@ -95,11 +100,32 @@ public class TextMuxerExtractor
 
         try
         {
-
             string ffmpegPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg_.exe");
 
-            string arguments =
-                $"-i \"{inputVideoFile}\" -vf \"subtitles={Path.GetFileName(newTextFile)}:force_style='BorderStyle=3,PrimaryColour=&H00FFFFFF,BackColour=&HFF000000,FontSize=26'\" \"{outputFile}\"";
+            string arguments = "";
+
+            if (!string.IsNullOrWhiteSpace(startTime) && !string.IsNullOrWhiteSpace(endTime))
+            {
+                arguments =
+                    $"-ss {startTime} -to {endTime} -i \"{inputVideoFile}\" -vf \"subtitles={Path.GetFileName(newTextFile)}:force_style='BorderStyle=3,PrimaryColour=&H00FFFFFF,BackColour=&HFF000000,FontSize=26'\" \"{outputFile}\"";
+            }
+            else if (string.IsNullOrWhiteSpace(startTime) && !string.IsNullOrWhiteSpace(endTime))
+            {
+                startTime = "00:00:00";
+                arguments =
+                    $"-ss {startTime} -to {endTime} -i \"{inputVideoFile}\" -vf \"subtitles={Path.GetFileName(newTextFile)}:force_style='BorderStyle=3,PrimaryColour=&H00FFFFFF,BackColour=&HFF000000,FontSize=26'\" \"{outputFile}\"";
+            }
+            else if (!string.IsNullOrWhiteSpace(startTime) && string.IsNullOrWhiteSpace(endTime))
+            {
+                endTime = "99:00:00";
+                arguments =
+                    $"-ss {startTime} -to {endTime} -i \"{inputVideoFile}\" -vf \"subtitles={Path.GetFileName(newTextFile)}:force_style='BorderStyle=3,PrimaryColour=&H00FFFFFF,BackColour=&HFF000000,FontSize=26'\" \"{outputFile}\"";
+            }
+            else
+            {
+                arguments =
+                    $"-i \"{inputVideoFile}\" -vf \"subtitles={Path.GetFileName(newTextFile)}:force_style='BorderStyle=3,PrimaryColour=&H00FFFFFF,BackColour=&HFF000000,FontSize=26'\" \"{outputFile}\"";
+            }
 
             ProcessStartInfo startInfo = new ProcessStartInfo(ffmpegPath, arguments)
             {
@@ -110,6 +136,7 @@ public class TextMuxerExtractor
 
             using (Process process = Process.Start(startInfo))
                 await process.WaitForExitAsync();
+
         }
         finally
         {

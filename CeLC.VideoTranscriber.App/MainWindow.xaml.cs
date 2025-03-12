@@ -28,7 +28,6 @@ namespace CeLC.VideoTranscriber.App
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
-            // Konfiguracja okna dialogowego wyboru pliku
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 Filter = "Video files|*.mp4;*.avi;*.mkv|All files|*.*"
@@ -197,7 +196,9 @@ namespace CeLC.VideoTranscriber.App
 
                 await new TextMuxerExtractor().MuxVideoWithText(
                     MuxVideoFileTextBox.Text,
-                    MuxSubtitlesTextBox.Text);
+                    MuxSubtitlesTextBox.Text,
+                    TimeFromTextBox.Text,
+                    TimeToTextBox.Text);
 
                 OnMuxProgress($"> Job done in {stowatch.Elapsed.TotalSeconds}s <");
 

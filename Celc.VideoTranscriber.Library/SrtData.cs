@@ -9,7 +9,10 @@ namespace CeLC.VideoTranscriber.Library
     {
         public List<SrtSegment> Segments { get; set; } = new List<SrtSegment>();
 
-        public void SaveTo(string outputSrtPath)
+        public Boolean ContainsOriginalText =>
+            Segments.Any(s => !string.IsNullOrEmpty(s.TextOriginal));
+
+        public void SaveTo(string outputSrtPath, bool saveOriginalText = true)
         {
             using (StreamWriter writer = new StreamWriter(outputSrtPath))
             {
@@ -17,11 +20,12 @@ namespace CeLC.VideoTranscriber.Library
                 {
                     writer.WriteLine(segment.Index);
                     writer.WriteLine($"{FormatTime(segment.Start)} --> {FormatTime(segment.End)}");
-                    if (!string.IsNullOrEmpty(segment.Text2))
+                    if (saveOriginalText && (!string.IsNullOrEmpty(segment.TextOriginal)))
                     {
-                        writer.WriteLine(segment.Text2);
+                        writer.WriteLine(segment.TextOriginal);
                         writer.WriteLine("----");
                     }
+
                     writer.WriteLine(segment.Text);
                     writer.WriteLine();
                 }
@@ -47,7 +51,8 @@ namespace CeLC.VideoTranscriber.Library
             }
 
             string content = File.ReadAllText(inputSrtPath);
-            var segmentsBlocks = content.Split(new string[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var segmentsBlocks =
+                content.Split(new string[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var block in segmentsBlocks)
             {
                 var lines = block.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
@@ -68,13 +73,13 @@ namespace CeLC.VideoTranscriber.Library
                     throw new Exception($"Błąd podczas parsowania czasu: {ex.Message}");
                 }
 
-                string text2 = null;
+                string textOriginal = null;
                 string text = null;
                 if (lines.Length >= 3)
                 {
                     if (lines.Length >= 4 && !string.IsNullOrWhiteSpace(lines[2]) && lines[3].Trim() == "----")
                     {
-                        text2 = lines[2];
+                        textOriginal = lines[2];
                         if (lines.Length > 4)
                         {
                             text = string.Join(Environment.NewLine, lines.Skip(4));
@@ -87,8 +92,8 @@ namespace CeLC.VideoTranscriber.Library
                 }
 
                 var segment = SrtSegment.From(text, start, end, index);
-                if (!string.IsNullOrEmpty(text2))
-                    segment.Text2 = text2;
+                if (!string.IsNullOrEmpty(textOriginal))
+                    segment.TextOriginal = textOriginal;
                 Segments.Add(segment);
             }
         }
