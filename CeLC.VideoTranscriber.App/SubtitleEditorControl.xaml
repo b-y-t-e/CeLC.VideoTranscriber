@@ -13,26 +13,30 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Panel wyboru plików -->
-        <StackPanel Orientation="Vertical" Grid.Row="0" Margin="10">
-            <!-- Wybór pliku wideo -->
-            <DockPanel LastChildFill="True">
-                <TextBlock Text="Select a video file:" DockPanel.Dock="Left" />
-                <Button Content="Browse" Click="BtnBrowseVideo_Click" DockPanel.Dock="Right" />
-                <TextBox Text="{Binding VideoPath, ElementName=ucSubtitleEditor, Mode=TwoWay}" Margin="5,0" />
-            </DockPanel>
-            <!-- Wybór pliku napisów -->
-            <DockPanel Margin="0,5,0,0" LastChildFill="True">
-                <TextBlock Text="Select subtitles:" DockPanel.Dock="Left" />
-                <Button Content="Browse" Click="BtnBrowseSubtitles_Click" DockPanel.Dock="Right" />
-                <TextBox Text="{Binding SubtitlesPath, ElementName=ucSubtitleEditor, Mode=TwoWay}" Margin="5,0" />
-            </DockPanel>
+        <DockPanel Grid.Row="0" Margin="5, 5, 5, 10">
+
             <!-- Zapis napisów -->
-            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                <Button x:Name="btnSave" Content="Save Subtitles" Click="BtnSave_Click"
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="5,0,0,0">
+                <Button x:Name="btnSave" Content="Save" Click="BtnSave_Click" Padding="10" FontSize="16"
                         IsEnabled="{Binding IsReady, ElementName=ucSubtitleEditor}" />
             </StackPanel>
-        </StackPanel>
+
+            <!-- Panel wyboru plików -->
+            <StackPanel Orientation="Vertical">
+                <!-- Wybór pliku wideo -->
+                <DockPanel LastChildFill="True">
+                    <TextBlock Text="Select a video file:" DockPanel.Dock="Left" />
+                    <Button Content="Browse" Click="BtnBrowseVideo_Click" DockPanel.Dock="Right" />
+                    <TextBox Text="{Binding VideoPath, ElementName=ucSubtitleEditor, Mode=TwoWay}" Margin="5,0" />
+                </DockPanel>
+                <!-- Wybór pliku napisów -->
+                <DockPanel Margin="0,5,0,0" LastChildFill="True">
+                    <TextBlock Text="Select subtitles:" DockPanel.Dock="Left" />
+                    <Button Content="Browse" Click="BtnBrowseSubtitles_Click" DockPanel.Dock="Right" />
+                    <TextBox Text="{Binding SubtitlesPath, ElementName=ucSubtitleEditor, Mode=TwoWay}" Margin="5,0" />
+                </DockPanel>
+            </StackPanel>
+        </DockPanel>
 
         <!-- Odtwarzacz filmu -->
         <Grid Grid.Row="1" Background="Black" MouseLeftButtonDown="MediaElement_MouseLeftButtonDown">
@@ -49,26 +53,27 @@
         </Grid>
 
         <!-- Edycja napisów -->
-        <DockPanel Grid.Row="2" LastChildFill="True" Margin="10">
+        <DockPanel Grid.Row="2" LastChildFill="True" Margin="5">
             <Button x:Name="btnPrevious"
                     Content="&lt;"
-                    DockPanel.Dock="Left" Margin="0, 0, 10, 0" Padding="10"
+                    DockPanel.Dock="Left" Margin="0, 0, 5, 0" Padding="10"
                     Click="BtnPrevious_Click" />
             <Button x:Name="btnNext"
                     Content="&gt;"
-                    DockPanel.Dock="Right" Margin="10, 0, 0, 0" Padding="10"
+                    DockPanel.Dock="Right" Margin="5, 0, 0, 0" Padding="10"
                     Click="BtnNext_Click" />
             <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Center"
                         x:Name="panelEditors">
                 <!-- Poprzedni napis -->
                 <DockPanel LastChildFill="True">
                     <TextBlock x:Name="labelTimePrevious" HorizontalAlignment="Left" FontSize="12"
+                               Foreground="#333"
                                VerticalAlignment="Top" />
                     <TextBox x:Name="textBoxOriginalPrevious"
                              VerticalAlignment="Top"
                              TextWrapping="Wrap"
                              FontSize="12"
-                             Foreground="Gray"
+                             Foreground="#333"
                              Margin="5,0,0,0"
                              IsReadOnly="True"
                              BorderThickness="0"
@@ -77,48 +82,50 @@
                 <TextBox x:Name="textBoxSubtitlePrevious"
                          TextWrapping="Wrap"
                          AcceptsReturn="True"
-                         FontSize="16" MinHeight="40"
-                         Margin="0,0,0,10"
+                         FontSize="16" MinHeight="50"
+                         Margin="0,0,0,5"
                          TextChanged="TextBoxSubtitlePrevious_TextChanged" />
 
                 <!-- Bieżący napis -->
                 <DockPanel LastChildFill="True">
                     <TextBlock x:Name="labelTimeCurrent" HorizontalAlignment="Left" FontSize="12"
+                               Foreground="#333"
                                VerticalAlignment="Top" />
                     <TextBox x:Name="textBoxOriginalCurrent"
                              VerticalAlignment="Top"
                              TextWrapping="Wrap"
                              FontSize="12"
-                             Foreground="Gray"
+                             Foreground="#333"
                              Margin="5,0,0,0"
                              IsReadOnly="True"
                              BorderThickness="0"
-                             Background="Transparent"/>
+                             Background="Transparent" />
                 </DockPanel>
                 <TextBox x:Name="textBoxSubtitle"
                          TextWrapping="Wrap"
                          AcceptsReturn="True" MinHeight="50"
                          FontSize="16" FontWeight="Bold"
-                         Margin="0,0,0,10"
+                         Margin="0,0,0,5"
                          TextChanged="TextBoxSubtitle_TextChanged" />
 
                 <!-- Następny napis -->
                 <DockPanel LastChildFill="True">
-                    <TextBlock x:Name="labelTimeNext" HorizontalAlignment="Left" FontSize="12" VerticalAlignment="Top" />
+                    <TextBlock x:Name="labelTimeNext" HorizontalAlignment="Left" FontSize="12" VerticalAlignment="Top"
+                               Foreground="#333" />
                     <TextBox x:Name="textBoxOriginalNext"
                              VerticalAlignment="Top"
                              TextWrapping="Wrap"
                              FontSize="12"
-                             Foreground="Gray"
+                             Foreground="#333"
                              Margin="5,0,0,0"
                              IsReadOnly="True"
                              BorderThickness="0"
-                             Background="Transparent"/>
+                             Background="Transparent" />
                 </DockPanel>
                 <TextBox x:Name="textBoxSubtitleNext"
                          TextWrapping="Wrap"
                          AcceptsReturn="True"
-                         FontSize="16" MinHeight="40"
+                         FontSize="16" MinHeight="50"
                          TextChanged="TextBoxSubtitleNext_TextChanged" />
 
             </StackPanel>

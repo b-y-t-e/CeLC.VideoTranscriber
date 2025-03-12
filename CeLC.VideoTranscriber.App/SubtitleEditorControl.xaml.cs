@@ -231,6 +231,12 @@ namespace SubtitleEditorDemo
 
             SrtData.SaveTo(SubtitlesPath);
 
+            if (SrtData.ContainsOriginalText)
+            {
+                var path = Path.ChangeExtension(SubtitlesPath, ".final.srt");
+                SrtData.SaveTo(path, false);
+            }
+
             /*var sfd = new SaveFileDialog
             {
                 Filter = "Subtitle Files|*.srt|All Files|*.*",
@@ -251,7 +257,7 @@ namespace SubtitleEditorDemo
             if (currentSegmentIndex > 0)
             {
                 var diff = mediaElement.Position - CurrentSegment?.Start;
-                if (diff?.TotalMilliseconds > 500)
+                if (diff?.TotalMilliseconds > 1000)
                 {
                     mediaElement.Position = CurrentSegment.Start + TimeSpan.FromMilliseconds(100);
                     return;
@@ -362,14 +368,14 @@ namespace SubtitleEditorDemo
                 // Bieżący napis.
                 textBoxSubtitle.Text = SrtData.Segments[currentSegmentIndex].Text;
                 labelTimeCurrent.Text = FormatTime(SrtData.Segments[currentSegmentIndex].Start);
-                textBoxOriginalCurrent.Text = SrtData.Segments[currentSegmentIndex].Text2;
+                textBoxOriginalCurrent.Text = SrtData.Segments[currentSegmentIndex].TextOriginal;
 
                 // Poprzedni napis.
                 if (currentSegmentIndex > 0)
                 {
                     textBoxSubtitlePrevious.Text = SrtData.Segments[currentSegmentIndex - 1].Text;
                     labelTimePrevious.Text = FormatTime(SrtData.Segments[currentSegmentIndex - 1].Start);
-                    textBoxOriginalPrevious.Text = SrtData.Segments[currentSegmentIndex - 1].Text2;
+                    textBoxOriginalPrevious.Text = SrtData.Segments[currentSegmentIndex - 1].TextOriginal;
                 }
                 else
                 {
@@ -383,7 +389,7 @@ namespace SubtitleEditorDemo
                 {
                     textBoxSubtitleNext.Text = SrtData.Segments[currentSegmentIndex + 1].Text;
                     labelTimeNext.Text = FormatTime(SrtData.Segments[currentSegmentIndex + 1].Start);
-                    textBoxOriginalNext.Text = SrtData.Segments[currentSegmentIndex + 1].Text2;
+                    textBoxOriginalNext.Text = SrtData.Segments[currentSegmentIndex + 1].TextOriginal;
                 }
                 else
                 {
